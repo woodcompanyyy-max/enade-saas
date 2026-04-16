@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Course {
+  id                String       @id @default(cuid())
+  name              String
+  category          String       // Bacharelado, Licenciatura, Tecnológico
+  modality          String       // Presencial, Semipresencial, EaD
+  enadeScore        Float        @default(0)
+  nationalAvg       Float        @default(0)
+  participationRate Float        @default(0)
+  idd               Float        @default(0)
+  riskLevel         String       @default("Médio") // Baixo, Médio, Alto
+  students          Student[]
+  assessments       Assessment[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model Student {
+  id                 String   @id @default(cuid())
+  name               String
+  email              String?
+  courseId           String
+  course             Course   @relation(fields: [courseId], references: [id])
+  entryYear          Int
+  graduationYear     Int?
+  lastSimulatedScore Float    @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Assessment {
+  id           String   @id @default(cuid())
+  year         Int
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id])
+  generalScore Float
+  idd          Float
+  riskLevel    String
+  participation Float    @default(0)
+  createdAt    DateTime @default(now())
+}
