@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Zap, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import Papa from 'papaparse';
+import { importDataAction } from '@/app/actions/import';
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -22,25 +24,36 @@ export function UploadButton() {
     setStatus("loading");
     setMessage("");
 
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const json = await res.json();
-
-      if (res.ok) {
-        setStatus("success");
-        setMessage(`${json.count} cursos importados com sucesso.`);
-        // Revalida a página via router sem reload forçado
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: async (results) => {
+        try {
+          const rows = results.data as any[];
+          const summary = await importDataAction(rows);
+          
+          if (summary.errorCount === 0) {
+            setStatus("success");
+            setMessage(`${summary.successCount} registros importados.`);
+            setTimeout(() => window.location.reload(), 1500);
+          } else if (summary.successCount > 0) {
+            setStatus("warning" as any);
+            setMessage(`${summary.successCount} ok, ${summary.errorCount} erros.`);
+          } else {
+            setStatus("error");
+            setMessage("Falha total na importação.");
+          }
+        } catch (err: any) {
+          setStatus("error");
+          setMessage(err.message || "Erro ao processar.");
+        }
+      },
+      error: () => {
         setStatus("error");
-        setMessage(json.error ?? "Erro ao processar arquivo.");
+        setMessage("Erro ao ler o arquivo CSV.");
       }
-    } catch {
-      setStatus("error");
-      setMessage("Erro de conexão. Tente novamente.");
-    }
+    });
 
     // Reset após 4s
     setTimeout(() => { setStatus("idle"); setMessage(""); }, 4000);

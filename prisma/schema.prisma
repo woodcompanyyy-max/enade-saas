@@ -10,9 +10,15 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Shift {
+  MATUTINO
+  NOTURNO
+  EAD
+}
+
 model Course {
   id                String       @id @default(cuid())
-  name              String
+  name              String       @unique
   category          String       // Bacharelado, Licenciatura, Tecnológico
   modality          String       // Presencial, Semipresencial, EaD
   enadeScore        Float        @default(0)
@@ -31,44 +37,68 @@ model Course {
 }
 
 model Student {
-  id                 String   @id @default(cuid())
+  id                 String          @id @default(cuid())
+  ra                 String          @unique
   name               String
   email              String?
+  shift              Shift           @default(EAD)
   courseId           String
-  course             Course   @relation(fields: [courseId], references: [id])
-  entryYear          Int
+  course             Course          @relation(fields: [courseId], references: [id])
+  entryYear          Int?
   graduationYear     Int?
-  lastSimulatedScore Float    @default(0)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  lastSimulatedScore Float           @default(0)
+  results            StudentResult[]
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+}
+
+model StudentResult {
+  id              String      @id @default(cuid())
+  studentId       String
+  student         Student     @relation(fields: [studentId], references: [id])
+  courseId        String
+  simuladoId      String?
+  simulado        Simulado?   @relation(fields: [simuladoId], references: [id])
+  assessmentId    String?
+  assessment      Assessment? @relation(fields: [assessmentId], references: [id])
+  examType        String      // "simulado" ou "oficial"
+  specificCorrect Int
+  specificWrong   Int
+  fgCorrect       Int
+  fgWrong         Int
+  totalCorrect    Int
+  totalWrong      Int
+  createdAt       DateTime    @default(now())
 }
 
 model Assessment {
-  id           String   @id @default(cuid())
-  year         Int
-  courseId     String
-  course       Course   @relation(fields: [courseId], references: [id])
-  generalScore Float
-  idd          Float
-  riskLevel    String
-  participation Float    @default(0)
-  createdAt    DateTime @default(now())
+  id            String          @id @default(cuid())
+  year          Int
+  courseId      String
+  course        Course          @relation(fields: [courseId], references: [id])
+  generalScore  Float
+  idd           Float
+  riskLevel     String
+  participation Float           @default(0)
+  results       StudentResult[]
+  createdAt     DateTime        @default(now())
 }
 
 model Simulado {
-  id            String   @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
   date          DateTime
-  avg           Float    @default(0)
-  participation Float    @default(0)
-  status        String   @default("Agendado") // Agendado, Em andamento, Finalizado
+  avg           Float           @default(0)
+  participation Float           @default(0)
+  status        String          @default("Agendado") // Agendado, Em andamento, Finalizado
   userId        String?
-  user          User?    @relation(fields: [userId], references: [id])
+  user          User?           @relation(fields: [userId], references: [id])
   courseId      String
-  course        Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course        Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
   diagnosticos  Diagnostico[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  results       StudentResult[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Diagnostico {

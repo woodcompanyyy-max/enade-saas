@@ -200,3 +200,29 @@ export interface Report {
   size: string;
   url?: string;
 }
+
+// ---------------------------------------------------------------------------
+// IMPORTAÇÃO
+// ---------------------------------------------------------------------------
+export interface ImportRow {
+  student_name: string;
+  ra: string;
+  course: string;
+  shift: string;
+  exam_type: string;
+  specific_correct: number;
+  specific_wrong: number;
+  fg_correct: number;
+  fg_wrong: number;
+  total_correct: number;
+  total_wrong: number;
+}
+
+export interface ImportSummary {
+  totalRows: number;
+  successCount: number;
+  errorCount: number;
+  errors: { row: number; error: string }[];
+  newCourses: string[];
+  newStudents: number;
+}
