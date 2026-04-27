@@ -32,6 +32,7 @@ model Course {
   assessments       Assessment[]
   simulados         Simulado[]
   diagnosticos      Diagnostico[]
+  results           StudentResult[]
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 }
@@ -61,6 +62,7 @@ model StudentResult {
   simulado        Simulado?   @relation(fields: [simuladoId], references: [id])
   assessmentId    String?
   assessment      Assessment? @relation(fields: [assessmentId], references: [id])
+  course          Course      @relation(fields: [courseId], references: [id])
   examType        String      // "simulado" ou "oficial"
   specificCorrect Int
   specificWrong   Int
