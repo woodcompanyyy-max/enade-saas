@@ -129,6 +129,11 @@ export interface RadarDataPoint {
   fullMark: number;   // sempre 100
 }
 
+export interface EvolutionDataPoint {
+  date: string;       // Formatado: "2024-01"
+  average: number;
+}
+
 // ---------------------------------------------------------------------------
 // SIMULADOS
 // ---------------------------------------------------------------------------

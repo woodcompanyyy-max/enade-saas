@@ -1,4 +1,4 @@
-import type { Course, CourseQueryParams, PaginatedResponse } from '@/types';
+import type { Course, CourseQueryParams, PaginatedResponse, EvolutionDataPoint } from '@/types';
 
 const USE_MOCK = process.env.USE_MOCK === 'true';
 
@@ -44,4 +44,18 @@ export async function deleteCourse(id: string, userId: string, role: string): Pr
   }
   const { deletePrismaCourse } = await import('@/adapters/prisma/course.prisma');
   return deletePrismaCourse(id, userId, role);
+}
+
+export async function getCourseEvolution(courseId: string): Promise<EvolutionDataPoint[]> {
+  if (USE_MOCK) {
+    // Retorno mockado simples para desenvolvimento
+    return [
+      { date: "2024-01", average: 3.2 },
+      { date: "2024-03", average: 3.8 },
+      { date: "2024-05", average: 4.1 },
+    ];
+  }
+  
+  const { getPrismaCourseEvolution } = await import('@/adapters/prisma/course.prisma');
+  return getPrismaCourseEvolution(courseId);
 }

@@ -9,12 +9,11 @@ import {
   BrainCircuit,
   Target
 } from "lucide-react";
-import { HistoricalChart } from "@/components/historical-chart";
 import { CompetenceRadar } from "@/components/competence-radar";
-import { getCourseById } from "@/services/course.service";
-import { getHistoricalChartData, getRadarData } from "@/services/dashboard.service";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { DownloadReportButton } from "@/components/reports/DownloadReportButton";
+import { CourseEvolutionChart } from "@/components/courses/CourseEvolutionChart";
+import { getCourseEvolution } from "@/services/course.service";
 
 
 interface Props {
@@ -25,10 +24,10 @@ export default async function CourseDetailPage(props: Props) {
   const { id } = await props.params;
   
   // Consome services real/mock intercabiáveis
-  const [course, chartData, radarData] = await Promise.all([
+  const [course, radarData, evolutionData] = await Promise.all([
     getCourseById(id),
-    getHistoricalChartData(),
-    getRadarData(id)
+    getRadarData(id),
+    getCourseEvolution(id)
   ]);
 
   if (!course) {
@@ -114,7 +113,7 @@ export default async function CourseDetailPage(props: Props) {
              </div>
           </div>
           <div className="flex-1 min-h-0">
-            <HistoricalChart data={chartData} />
+            <CourseEvolutionChart data={evolutionData} />
           </div>
         </div>
 

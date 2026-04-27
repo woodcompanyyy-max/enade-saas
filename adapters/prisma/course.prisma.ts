@@ -139,3 +139,19 @@ export async function deletePrismaCourse(id: string, userId: string, role: strin
     return false;
   }
 }
+
+export async function getPrismaCourseEvolution(courseId: string): Promise<import('@/types').EvolutionDataPoint[]> {
+  const simulados = await prisma.simulado.findMany({
+    where: { courseId, status: 'Finalizado' },
+    orderBy: { date: 'asc' },
+    select: {
+      date: true,
+      avg: true
+    }
+  });
+
+  return simulados.map(s => ({
+    date: s.date.toISOString().substring(0, 7), // "2024-01"
+    average: Number(s.avg.toFixed(2))
+  }));
+}
