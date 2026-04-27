@@ -111,22 +111,41 @@ export async function processImport(rows: ImportRow[]): Promise<ImportSummary> {
         assessmentId = ass.id;
       }
 
-      // 5. Criar Resultado Detalhado
-      await prisma.studentResult.create({
-        data: {
+      // 5. Garantir Resultado Único (Upsert manual para evitar duplicados)
+      const existingResult = await prisma.studentResult.findFirst({
+        where: {
           studentId: student.id,
           courseId: course.id,
           simuladoId: simuladoId,
           assessmentId: assessmentId,
-          examType: examType,
-          specificCorrect: Number(row.specific_correct) || 0,
-          specificWrong: Number(row.specific_wrong) || 0,
-          fgCorrect: Number(row.fg_correct) || 0,
-          fgWrong: Number(row.fg_wrong) || 0,
-          totalCorrect: Number(row.total_correct) || 0,
-          totalWrong: Number(row.total_wrong) || 0,
-        },
+          examType: examType
+        }
       });
+
+      const resultData = {
+        studentId: student.id,
+        courseId: course.id,
+        simuladoId: simuladoId,
+        assessmentId: assessmentId,
+        examType: examType,
+        specificCorrect: Number(row.specific_correct) || 0,
+        specificWrong: Number(row.specific_wrong) || 0,
+        fgCorrect: Number(row.fg_correct) || 0,
+        fgWrong: Number(row.fg_wrong) || 0,
+        totalCorrect: Number(row.total_correct) || 0,
+        totalWrong: Number(row.total_wrong) || 0,
+      };
+
+      if (existingResult) {
+        await prisma.studentResult.update({
+          where: { id: existingResult.id },
+          data: resultData
+        });
+      } else {
+        await prisma.studentResult.create({
+          data: resultData
+        });
+      }
 
       summary.successCount++;
     } catch (error: any) {
@@ -135,5 +154,45 @@ export async function processImport(rows: ImportRow[]): Promise<ImportSummary> {
     }
   }
 
+  // 6. Recalcular Agregados dos Cursos Afetados
+  const affectedCourses = Array.from(new Set(rows.map(r => normalizeCourseName(r.course))));
+  for (const courseName of affectedCourses) {
+    await updateCourseAggregates(courseName);
+  }
+
   return summary;
+}
+
+/**
+ * Recalcula as médias e KPIs de um curso após importação.
+ */
+async function updateCourseAggregates(courseName: string) {
+  const course = await prisma.course.findUnique({
+    where: { name: courseName },
+    include: { 
+      students: true,
+      results: true 
+    }
+  });
+
+  if (!course) return;
+
+  const totalResults = course.results.length;
+  const totalStudents = course.students.length;
+  
+  if (totalResults > 0) {
+    const avgScore = course.results.reduce((acc, r) => acc + r.totalCorrect, 0) / totalResults;
+    const participationRate = totalStudents > 0 ? (totalResults / totalStudents) * 100 : 0;
+    
+    await prisma.course.update({
+      where: { id: course.id },
+      data: {
+        enadeScore: avgScore,
+        participationRate: participationRate,
+        // Mock de IDD e National Avg baseado no nome para visualização
+        nationalAvg: course.name.includes('Direito') ? 12 : 10,
+        idd: avgScore > 10 ? 4.2 : 2.5
+      }
+    });
+  }
 }

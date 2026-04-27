@@ -33,7 +33,7 @@ export async function getRadarData(courseId?: string): Promise<RadarDataPoint[]>
     const { getMockRadarData } = await import('@/adapters/mock/dashboard.mock');
     return getMockRadarData();
   }
-  // TODO (Etapa 3): buscar dados de competência real por curso
-  const { getMockRadarData } = await import('@/adapters/mock/dashboard.mock');
-  return getMockRadarData();
+  
+  const { getPrismaRadarData } = await import('@/adapters/prisma/dashboard.prisma');
+  return getPrismaRadarData(courseId);
 }

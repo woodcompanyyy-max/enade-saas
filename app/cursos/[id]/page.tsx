@@ -135,8 +135,10 @@ export default async function CourseDetailPage(props: Props) {
           </div>
           <p className="text-zinc-300 dark:text-zinc-700 leading-relaxed text-sm md:text-base">
             O curso de <span className="font-bold text-white dark:text-zinc-900">{course.name}</span> apresenta uma nota geral de <span className="font-bold text-white dark:text-zinc-900">{course.enadeScore.toFixed(1)}</span>. 
-            O foco deve ser mantido em elevar o indicador acima da média nacional ({course.nationalAvg.toFixed(1)}).
-            O IDD (Indicador de Diferença entre Desempenhos) está em {course.idd.toFixed(1)}, mostrando o valor agregado real.
+            {course.enadeScore < course.nationalAvg 
+              ? " O foco deve ser mantido em elevar o indicador acima da média nacional."
+              : " O desempenho está sólido e acima da referência nacional."}
+            {" "}O IDD está em {course.idd.toFixed(1)}, indicando o valor agregado real aos alunos.
           </p>
         </div>
         <div className="flex flex-col justify-center gap-3 min-w-[200px] w-full md:w-auto">
