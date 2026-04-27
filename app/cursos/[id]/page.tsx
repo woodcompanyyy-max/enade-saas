@@ -14,6 +14,8 @@ import { CompetenceRadar } from "@/components/competence-radar";
 import { getCourseById } from "@/services/course.service";
 import { getHistoricalChartData, getRadarData } from "@/services/dashboard.service";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { DownloadReportButton } from "@/components/reports/DownloadReportButton";
+
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -60,9 +62,12 @@ export default async function CourseDetailPage(props: Props) {
             </div>
           </div>
           
-          <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-400 px-4 py-2.5 rounded-xl border border-green-100 dark:border-green-900/20 shrink-0">
-            <Target size={18} />
-            <span className="font-bold text-sm tracking-tight">Ciclo ENADE atual</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-400 px-4 py-2.5 rounded-xl border border-green-100 dark:border-green-900/20 shrink-0">
+              <Target size={18} />
+              <span className="font-bold text-sm tracking-tight">Ciclo ENADE atual</span>
+            </div>
+            <DownloadReportButton courseId={id} />
           </div>
         </div>
       </div>

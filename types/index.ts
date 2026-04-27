@@ -226,3 +226,43 @@ export interface ImportSummary {
   newCourses: string[];
   newStudents: number;
 }
+
+// ---------------------------------------------------------------------------
+// ANALYTICS
+// ---------------------------------------------------------------------------
+export interface CourseAnalytics {
+  averages: {
+    total: number;
+    specific: number;
+    fg: number;
+  };
+  risk: {
+    high: number;
+    medium: number;
+    low: number;
+    highRate: number;
+    students: { id: string; name: string; ra: string; score: number; level: RiskLevel }[];
+  };
+  comparison: {
+    national: { diff: number; status: 'above' | 'below' | 'equal' };
+    regional: { diff: number; status: 'above' | 'below' | 'equal' };
+  };
+  ranking: {
+    top: { name: string; score: number }[];
+    bottom: { name: string; score: number }[];
+  };
+  participation: {
+    totalStudents: number;
+    participated: number;
+    rate: number;
+  };
+  insights: string[];
+}
+
+export interface GlobalAnalytics {
+  totalStudents: number;
+  totalCourses: number;
+  globalAvg: number;
+  riskDistribution: { name: string; value: number }[]; // Para gráficos de pizza
+  performanceByArea: { area: string; avg: number }[];
+}
