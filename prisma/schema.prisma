@@ -133,3 +133,16 @@ model User {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 }
+
+model Benchmark {
+  id            String   @id @default(cuid())
+  courseName    String   // Normalizado
+  year          Int
+  avgFgUf       Float
+  avgFgBrasil   Float
+  avgCeUf       Float
+  avgCeBrasil   Float
+  createdAt     DateTime @default(now())
+
+  @@unique([courseName, year])
+}

@@ -15,6 +15,8 @@ const REGIONAL_AVG_MOCK: Record<string, { total: number }> = {
   'DEFAULT': { total: 9.5 }
 };
 
+import { getBenchmark } from '@/services/benchmark.service';
+
 /**
  * Calcula métricas detalhadas de um curso específico.
  */
@@ -87,7 +89,10 @@ export async function getCourseAnalytics(
     }
   });
 
-  // 4. Comparações (Benchmarks)
+  // 4. Comparações (Benchmarks Real)
+  // Assumindo ano 2023 ou 2024 para simplificar a MVP
+  const benchmark = await getBenchmark(course.name, 2023) || await getBenchmark(course.name, 2024);
+
   const nationalMock = NATIONAL_AVG_MOCK[course.name] || NATIONAL_AVG_MOCK['DEFAULT'];
   const regionalMock = REGIONAL_AVG_MOCK[course.name] || REGIONAL_AVG_MOCK['DEFAULT'];
 
@@ -96,6 +101,19 @@ export async function getCourseAnalytics(
     const status = diff > 0 ? 'above' : diff < 0 ? 'below' : 'equal';
     return { diff: Math.abs(Number(diff.toFixed(1))), status: status as any };
   };
+
+  let benchmarkComparison;
+  if (benchmark) {
+    benchmarkComparison = {
+      fgUfDiff: Number((avgFG - benchmark.avgFgUf).toFixed(2)),
+      fgBrasilDiff: Number((avgFG - benchmark.avgFgBrasil).toFixed(2)),
+      ceUfDiff: Number((avgSpecific - benchmark.avgCeUf).toFixed(2)),
+      ceBrasilDiff: Number((avgSpecific - benchmark.avgCeBrasil).toFixed(2)),
+      hasData: true
+    };
+  } else {
+    benchmarkComparison = { fgUfDiff: 0, fgBrasilDiff: 0, ceUfDiff: 0, ceBrasilDiff: 0, hasData: false };
+  }
 
   // 5. Retorno Estruturado
   return {
@@ -111,6 +129,7 @@ export async function getCourseAnalytics(
     comparison: {
       national: getComparison(avgTotal, nationalMock.total),
       regional: getComparison(avgTotal, regionalMock.total),
+      benchmark: benchmarkComparison
     },
     ranking: {
       top: results.slice(0, 5).map(r => ({ name: r.student.name, score: r.totalCorrect })),
@@ -121,27 +140,47 @@ export async function getCourseAnalytics(
       participated: totalResults,
       rate: totalStudents > 0 ? (totalResults / totalStudents) * 100 : 0,
     },
-    insights: generateInsights(avgTotal, avgSpecific, avgFG, nationalMock, risk)
+    insights: generateInsights(avgTotal, avgSpecific, avgFG, nationalMock, risk, benchmarkComparison)
   };
 }
 
-function generateInsights(avgTotal: number, avgSpecific: number, avgFG: number, nationalMock: any, risk: any): string[] {
+function generateInsights(
+  avgTotal: number, 
+  avgSpecific: number, 
+  avgFG: number, 
+  nationalMock: any, 
+  risk: any,
+  benchmark?: any
+): string[] {
   const insights: string[] = [];
 
-  if (avgTotal < nationalMock.total) {
-    insights.push("⚠️ O curso está com média geral abaixo da média nacional de referência.");
+  if (benchmark && benchmark.hasData) {
+    if (benchmark.fgUfDiff < 0) {
+      insights.push(`🚨 O curso está abaixo da média estadual (UF) em Formação Geral (${Math.abs(benchmark.fgUfDiff).toFixed(1)} pts).`);
+    } else if (benchmark.fgUfDiff > 0) {
+      insights.push(`✅ Excelente! Formação Geral acima da média estadual (+${benchmark.fgUfDiff.toFixed(1)} pts).`);
+    }
+
+    if (benchmark.ceBrasilDiff < 0) {
+      insights.push(`⚠️ Atenção nos Conhecimentos Específicos: o desempenho está inferior à média nacional (${Math.abs(benchmark.ceBrasilDiff).toFixed(1)} pts).`);
+    } else if (benchmark.ceBrasilDiff > 0) {
+      insights.push(`🏆 Destaque nacional em Conhecimentos Específicos (+${benchmark.ceBrasilDiff.toFixed(1)} pts vs Brasil).`);
+    }
+  } else {
+    // Fallback original
+    if (avgTotal < nationalMock.total) {
+      insights.push("⚠️ O curso está com média geral abaixo da média nacional de referência.");
+    }
+    if (avgFG < nationalMock.fg) {
+      insights.push("📘 Atenção: O desempenho em Formação Geral está inferior ao esperado nacionalmente.");
+    }
+    if (avgTotal > nationalMock.total * 1.1) {
+      insights.push("✅ Parabéns! O curso está performando 10% acima da média nacional.");
+    }
   }
 
   if (risk.highRate > 15) {
     insights.push("🚨 Alerta: Alta concentração de alunos em nível de Alto Risco (acima de 15%).");
-  }
-
-  if (avgFG < nationalMock.fg) {
-    insights.push("📘 Atenção: O desempenho em Formação Geral está inferior ao esperado nacionalmente.");
-  }
-
-  if (avgTotal > nationalMock.total * 1.1) {
-    insights.push("✅ Parabéns! O curso está performando 10% acima da média nacional.");
   }
 
   if (insights.length === 0) {

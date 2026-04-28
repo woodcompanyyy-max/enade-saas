@@ -252,6 +252,13 @@ export interface CourseAnalytics {
   comparison: {
     national: { diff: number; status: 'above' | 'below' | 'equal' };
     regional: { diff: number; status: 'above' | 'below' | 'equal' };
+    benchmark?: {
+      fgUfDiff: number;
+      fgBrasilDiff: number;
+      ceUfDiff: number;
+      ceBrasilDiff: number;
+      hasData: boolean;
+    }
   };
   ranking: {
     top: { name: string; score: number }[];
@@ -271,4 +278,27 @@ export interface GlobalAnalytics {
   globalAvg: number;
   riskDistribution: { name: string; value: number }[]; // Para gráficos de pizza
   performanceByArea: { area: string; avg: number }[];
+}
+
+// ---------------------------------------------------------------------------
+// BENCHMARK
+// ---------------------------------------------------------------------------
+export interface Benchmark {
+  id: string;
+  courseName: string;
+  year: number;
+  avgFgUf: number;
+  avgFgBrasil: number;
+  avgCeUf: number;
+  avgCeBrasil: number;
+  createdAt: string;
+}
+
+export interface ImportBenchmarkRow {
+  courseName: string;
+  year: number;
+  avgFgUf: number;
+  avgFgBrasil: number;
+  avgCeUf: number;
+  avgCeBrasil: number;
 }

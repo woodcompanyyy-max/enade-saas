@@ -15,6 +15,9 @@ import { DownloadReportButton } from "@/components/reports/DownloadReportButton"
 import { CourseEvolutionChart } from "@/components/courses/CourseEvolutionChart";
 import { getCourseEvolution, getCourseById } from "@/services/course.service";
 import { getRadarData } from "@/services/dashboard.service";
+import { getCourseAnalytics } from "@/services/analytics.service";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 
 interface Props {
@@ -25,10 +28,13 @@ export default async function CourseDetailPage(props: Props) {
   const { id } = await props.params;
   
   // Consome services real/mock intercabiáveis
-  const [course, radarData, evolutionData] = await Promise.all([
+  const session = await getServerSession(authOptions);
+  
+  const [course, radarData, evolutionData, analytics] = await Promise.all([
     getCourseById(id),
     getRadarData(id),
-    getCourseEvolution(id)
+    getCourseEvolution(id),
+    session ? getCourseAnalytics(id, session as any).catch(() => null) : Promise.resolve(null)
   ]);
 
   if (!course) {
@@ -133,13 +139,36 @@ export default async function CourseDetailPage(props: Props) {
              <TrendingUp size={24} />
              <h3 className="text-xl font-bold italic underline decoration-blue-500 decoration-2 underline-offset-4">Diagnóstico Smart</h3>
           </div>
-          <p className="text-zinc-300 dark:text-zinc-700 leading-relaxed text-sm md:text-base">
-            O curso de <span className="font-bold text-white dark:text-zinc-900">{course.name}</span> apresenta uma nota geral de <span className="font-bold text-white dark:text-zinc-900">{course.enadeScore.toFixed(1)}</span>. 
-            {course.enadeScore < course.nationalAvg 
-              ? " O foco deve ser mantido em elevar o indicador acima da média nacional."
-              : " O desempenho está sólido e acima da referência nacional."}
-            {" "}O IDD está em {course.idd.toFixed(1)}, indicando o valor agregado real aos alunos.
-          </p>
+          
+          {analytics?.comparison.benchmark?.hasData && (
+            <div className="grid grid-cols-2 gap-4 mt-2 mb-4 bg-zinc-800/50 p-4 rounded-xl border border-zinc-700/50">
+              <div>
+                <p className="text-xs text-zinc-400 font-bold mb-1 uppercase tracking-wider">Formação Geral</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Curso: <span className="font-bold text-white">{analytics.averages.fg}</span></span>
+                  <span className="text-sm text-zinc-400">vs UF: <span className={`font-bold ${analytics.comparison.benchmark.fgUfDiff >= 0 ? 'text-green-400' : 'text-red-400'}`}>{analytics.comparison.benchmark.fgUfDiff > 0 ? '+' : ''}{analytics.comparison.benchmark.fgUfDiff}</span></span>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-zinc-400 font-bold mb-1 uppercase tracking-wider">Específico</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Curso: <span className="font-bold text-white">{analytics.averages.specific}</span></span>
+                  <span className="text-sm text-zinc-400">vs BR: <span className={`font-bold ${analytics.comparison.benchmark.ceBrasilDiff >= 0 ? 'text-green-400' : 'text-red-400'}`}>{analytics.comparison.benchmark.ceBrasilDiff > 0 ? '+' : ''}{analytics.comparison.benchmark.ceBrasilDiff}</span></span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="text-zinc-300 dark:text-zinc-700 leading-relaxed text-sm md:text-base space-y-2">
+            {analytics?.insights.map((insight, idx) => (
+              <p key={idx} className="flex items-start gap-2">
+                <span className="mt-0.5">{insight.split(" ")[0]}</span>
+                <span>{insight.substring(insight.indexOf(" ") + 1)}</span>
+              </p>
+            )) || (
+              <p>O curso de <span className="font-bold text-white dark:text-zinc-900">{course.name}</span> apresenta uma nota geral de <span className="font-bold text-white dark:text-zinc-900">{course.enadeScore.toFixed(1)}</span>. O IDD está em {course.idd.toFixed(1)}.</p>
+            )}
+          </div>
         </div>
         <div className="flex flex-col justify-center gap-3 min-w-[200px] w-full md:w-auto">
           <div className="bg-zinc-800 dark:bg-white p-5 rounded-xl space-y-1 border border-zinc-700 dark:border-zinc-200 flex flex-col items-center justify-center text-center">
