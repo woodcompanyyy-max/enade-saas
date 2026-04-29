@@ -1,0 +1,42 @@
+student_name,ra,course,shift,exam_type,specific_correct,specific_wrong,fg_correct,fg_wrong,total_correct,total_wrong
+Aluno ADS 1,10001,Análise e Desenvolvimento de Sistemas,NOTURNO,simulado,8,7,3,2,11,9
+Aluno ADS 2,10002,Análise e Desenvolvimento de Sistemas,NOTURNO,simulado,5,10,2,3,7,13
+
+Aluno CC 1,10003,Ciência da Computação,NOTURNO,simulado,10,5,4,1,14,6
+Aluno CC 2,10004,Ciência da Computação,NOTURNO,simulado,6,9,3,2,9,11
+
+Aluno EDF 1,10005,Educação Física Licenciatura,MATUTINO,simulado,7,8,3,2,10,10
+Aluno EDF 2,10006,Educação Física Licenciatura,MATUTINO,simulado,4,11,2,3,6,14
+
+Aluno EP 1,10007,Engenharia de Produção,NOTURNO,simulado,9,6,4,1,13,7
+Aluno EP 2,10008,Engenharia de Produção,NOTURNO,simulado,5,10,2,3,7,13
+
+Aluno EE 1,10009,Engenharia Eletrônica,NOTURNO,simulado,6,9,3,2,9,11
+Aluno EE 2,10010,Engenharia Eletrônica,NOTURNO,simulado,3,12,1,4,4,16
+
+Aluno EM 1,10011,Engenharia Mecânica,NOTURNO,simulado,8,7,4,1,12,8
+Aluno EM 2,10012,Engenharia Mecânica,NOTURNO,simulado,5,10,2,3,7,13
+
+Aluno Física 1,10013,Física,MATUTINO,simulado,7,8,3,2,10,10
+Aluno Física 2,10014,Física,MATUTINO,simulado,3,12,1,4,4,16
+
+Aluno Geo 1,10015,Geografia,MATUTINO,simulado,6,9,3,2,9,11
+Aluno Geo 2,10016,Geografia,MATUTINO,simulado,4,11,2,3,6,14
+
+Aluno GTI 1,10017,Gestão da Tecnologia da Informação,NOTURNO,simulado,9,6,4,1,13,7
+Aluno GTI 2,10018,Gestão da Tecnologia da Informação,NOTURNO,simulado,5,10,2,3,7,13
+
+Aluno História 1,10019,História,MATUTINO,simulado,6,9,3,2,9,11
+Aluno História 2,10020,História,MATUTINO,simulado,3,12,1,4,4,16
+
+Aluno Letras 1,10021,Letras,MATUTINO,simulado,7,8,3,2,10,10
+Aluno Letras 2,10022,Letras,MATUTINO,simulado,4,11,2,3,6,14
+
+Aluno Matemática 1,10023,Matemática,MATUTINO,simulado,8,7,3,2,11,9
+Aluno Matemática 2,10024,Matemática,MATUTINO,simulado,5,10,2,3,7,13
+
+Aluno Pedagogia 1,10025,Pedagogia,MATUTINO,simulado,9,6,4,1,13,7
+Aluno Pedagogia 2,10026,Pedagogia,MATUTINO,simulado,6,9,3,2,9,11
+
+Aluno Química 1,10027,Química,MATUTINO,simulado,7,8,3,2,10,10
+Aluno Química 2,10028,Química,MATUTINO,simulado,4,11,2,3,6,14

@@ -1,8 +1,9 @@
 "use client";
 
-import { User, Shield, Database, Trash2, RefreshCcw, BarChart2 } from "lucide-react";
+import { User, Shield, Database, Trash2, RefreshCcw, BarChart2, Users, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { resetAndImportCSVAction } from "@/app/actions/debug.actions";
+import Link from "next/link";
 
 function RecalculateButton() {
   const [loading, setLoading] = useState(false);
@@ -96,36 +97,51 @@ export default function SettingsPage() {
           <button className="text-sm font-medium text-blue-600 hover:underline">Editar</button>
         </div>
 
+        {/* Módulo de Importação de Simulados */}
         <div className="p-6 flex items-center justify-between hover:bg-zinc-50 transition-colors">
           <div className="flex items-center gap-4">
-            <Database className="text-zinc-500" />
+            <Users className="text-emerald-500" />
             <div>
-              <p className="font-medium text-zinc-900">Dados da Instituição</p>
-              <p className="text-xs text-muted-foreground">CNPJ, Nome e Cursos vinculados.</p>
+              <p className="font-medium text-zinc-900">Importar Simulados/Alunos</p>
+              <p className="text-xs text-muted-foreground">
+                Sincronize resultados de provas e crie cursos automaticamente via CSV.
+              </p>
             </div>
           </div>
-          <button className="text-sm font-medium text-blue-600 hover:underline">Gerenciar</button>
+          <Link 
+            href="/admin/import-alunos"
+            className="text-sm font-bold bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-all"
+          >
+            Acessar Importador
+          </Link>
+        </div>
+
+        {/* Módulo de Importação de Benchmarks */}
+        <div className="p-6 flex items-center justify-between hover:bg-zinc-50 transition-colors">
+          <div className="flex items-center gap-4">
+            <TrendingUp className="text-blue-500" />
+            <div>
+              <p className="font-medium text-zinc-900">Benchmarks INEP</p>
+              <p className="text-xs text-muted-foreground">
+                Atualize as médias nacionais e estaduais para comparação.
+              </p>
+            </div>
+          </div>
+          <Link 
+            href="/admin/import-benchmark"
+            className="text-sm font-bold bg-blue-50 text-blue-700 px-4 py-2 rounded-lg border border-blue-100 hover:bg-blue-100 transition-all"
+          >
+            Acessar Benchmarks
+          </Link>
         </div>
 
         <div className="p-6 flex items-center justify-between hover:bg-zinc-50 transition-colors">
           <div className="flex items-center gap-4">
-            <Shield className="text-zinc-500" />
-            <div>
-              <p className="font-medium text-zinc-900">Segurança e Tokens</p>
-              <p className="text-xs text-muted-foreground">Chaves de API para integração com IA.</p>
-            </div>
-          </div>
-          <button className="text-sm font-medium text-blue-600 hover:underline">Configurar</button>
-        </div>
-
-        <div className="p-6 flex items-center justify-between hover:bg-zinc-50 transition-colors">
-          <div className="flex items-center gap-4">
-            <BarChart2 className="text-blue-500" />
+            <BarChart2 className="text-zinc-500" />
             <div>
               <p className="font-medium text-zinc-900">Recalcular KPIs dos Cursos</p>
               <p className="text-xs text-muted-foreground">
-                Recalcula Nota ENADE, Participação e IDD com base nos dados importados.{" "}
-                <strong>Não apaga nada.</strong>
+                Atualiza Nota ENADE e Risco com base nos alunos cadastrados.
               </p>
             </div>
           </div>
@@ -138,7 +154,7 @@ export default function SettingsPage() {
             <div>
               <p className="font-medium text-zinc-900">Limpar e Reiniciar Dados</p>
               <p className="text-xs text-muted-foreground text-red-500">
-                Atenção: Isso apagará todos os dados atuais e reimportará do enade-import.csv.
+                Atenção: Apaga tudo e reimporta do arquivo base enade-import.csv.
               </p>
             </div>
           </div>
