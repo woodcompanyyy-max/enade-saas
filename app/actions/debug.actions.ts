@@ -21,8 +21,10 @@ export async function resetAndImportCSVAction() {
     await prisma.assessment.deleteMany({});
     await prisma.student.deleteMany({});
     await prisma.course.deleteMany({});
+    await prisma.benchmark.deleteMany({});
 
-    console.log("Banco zerado com sucesso. Iniciando importação do enade-import.csv...");
+    console.log("Banco zerado com sucesso (incluindo Benchmarks). Iniciando importação do enade-import.csv...");
+
 
     // Caminho para o CSV
     const csvPath = path.join(process.cwd(), "enade-import.csv");

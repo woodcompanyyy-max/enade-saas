@@ -152,9 +152,9 @@ export default function SettingsPage() {
           <div className="flex items-center gap-4">
             <Trash2 className="text-red-500" />
             <div>
-              <p className="font-medium text-zinc-900">Limpar e Reiniciar Dados</p>
+              <p className="font-medium text-zinc-900">Master Reset (Zerar Sistema)</p>
               <p className="text-xs text-muted-foreground text-red-500">
-                Atenção: Apaga tudo e reimporta do arquivo base enade-import.csv.
+                Atenção: Isso apagará <strong>TUDO</strong> (Alunos, Simulados e Benchmarks INEP). O sistema voltará ao estado inicial.
               </p>
             </div>
           </div>
