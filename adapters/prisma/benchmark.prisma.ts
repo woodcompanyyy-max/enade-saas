@@ -1,3 +1,6 @@
+import { prisma } from '@/lib/prisma';
+import type { ImportBenchmarkRow, Benchmark } from '@/types';
+
 export async function getPrismaBenchmark(courseName: string, year: number): Promise<Benchmark | null> {
   const benchmark = await prisma.benchmark.findUnique({
     where: {
